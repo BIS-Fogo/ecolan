@@ -77,7 +77,10 @@ validation=data.frame(matrix(ncol=4,nrow=3))
 colnames(validation)=c("rsquared","rmse","me","mae")
 
 model.train=list()
-for(x in 1:10){
+if (method=="rf"){
+  pdf("figures/predict_SR_Landsat.pdf")
+}
+for(x in 1:3){
   trainIndex <- createDataPartition(dlr.clean[,ncol(dlr.clean)], 
                                     p = 0.7, list = FALSE)
   df.train <- dlr.clean[trainIndex,]
@@ -99,15 +102,14 @@ for(x in 1:10){
   validation[x,]=data.frame(rsquared,rmse,me,mae)
   #### Determine and Plot Varibale Importance ################################## 
   if(method == "rf"){
-    pdf("figures/predict_SR_Landsat.pdf")
     varImpPlot(model.train[[x]]$finalModel)
     tmp <- importance(model.train[[x]]$finalModel)
     tmp <- data.frame(band = rownames(tmp), 
                       importance = tmp[,1])
     importance <- data.frame(rbind(importance, tmp))
-    dev.off()
-  } 
+  }
 }
+if (method=="rf") dev.off()
 
 if (method=="rf"){
   pdf("figures/predict_SR_Landsat_bwPlot.pdf")
