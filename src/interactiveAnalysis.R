@@ -46,6 +46,7 @@ library(rgdal)
 library(sp)
 library(raster)
 library(lattice)
+library(corrplot)
 
 # Use this for the Cape Verdian national projection as defined by
 # SR-ORG:7391 at www.spatialreference.org and EPSG:4825 at
@@ -88,6 +89,12 @@ nat <- data.frame(ID = veg$ID,
                   ANI = rowSums(ifelse(veg[,scol:ecol] > 0, 1, 0)))
 
 
+corrplot(cor(nat[,3:ncol(nat)], use = "complete.obs"), type = "lower")
+
+
+
+
+
 # ANIMALS vs. COVERAGE
 # ANIMALS vs. RICHNESS NAT -> negative
 # ANUMALS vs. RICHNESS AGR -> positive
@@ -107,6 +114,11 @@ plants <- nat$COVRG
 plants <- nat$AGR
 plants <- nat$NAT
 plants <- nat$TOT
+
+
+anim <- sqrt(nat$ANIMALS)
+anim <- sqrt(nat$ANIMALS)
+plants <- nat$COVRG
 plot(plants, anim)
 l <- loess(anim ~ plants, na.action = "na.omit")
 summary(l)
@@ -118,3 +130,27 @@ summary(lm(anim ~ plants, na.action = "na.omit"))
 
 
 
+anim <- nat$ANIMALS
+anim <- sqrt(nat$ANIMALS)
+plants <- nat$AGR
+plot(plants, anim)
+l <- loess(anim ~ plants, na.action = "na.omit")
+summary(l)
+n <- seq(min(plants),max(plants),0.01)
+p <- predict(l, n)
+plot(plants, anim)
+lines(n, p, col = "red", lwd = 2)
+summary(lm(anim ~ plants, na.action = "na.omit"))
+
+
+anim <- nat$ANIMALS
+anim <- sqrt(nat$ANIMALS)
+plants <- nat$NAT
+plot(plants, anim)
+l <- loess(anim ~ plants, na.action = "na.omit")
+summary(l)
+n <- seq(min(plants),max(plants),0.01)
+p <- predict(l, n)
+plot(plants, anim)
+lines(n, p, col = "red", lwd = 2)
+summary(lm(anim ~ plants, na.action = "na.omit"))
